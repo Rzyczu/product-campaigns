@@ -4,6 +4,7 @@ import cors from 'cors';
 import { env } from './config/env.js';
 import { errorHandler } from './middlewares/error.js';
 import { pingDb, pool } from './config/db.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(
         credentials: true,
     })
 );
+
+app.use('/auth', authRoutes);
 
 app.get('/health', (_req, res) => {
     res.json({ ok: true, env: env.NODE_ENV });
