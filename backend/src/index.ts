@@ -6,6 +6,9 @@ import { errorHandler } from './middlewares/error.js';
 import { pingDb, pool } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
+import keywordRoutes from './routes/keywords.js';
+import townRoutes from './routes/towns.js';
+import campaignRoutes from './routes/campaigns.js';
 
 const app = express();
 
@@ -15,6 +18,9 @@ app.use(cookieParser(env.COOKIE_SECRET));
 
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
+app.use('/keywords', keywordRoutes);
+app.use('/towns', townRoutes);
+app.use('/campaigns', campaignRoutes);
 
 app.use(
     cors({
