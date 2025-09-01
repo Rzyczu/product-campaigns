@@ -5,6 +5,7 @@ import { env } from './config/env.js';
 import { errorHandler } from './middlewares/error.js';
 import { pingDb, pool } from './config/db.js';
 import authRoutes from './routes/auth.js';
+import productRoutes from './routes/products.js';
 
 const app = express();
 
@@ -12,14 +13,15 @@ app.use(express.json());
 
 app.use(cookieParser(env.COOKIE_SECRET));
 
+app.use('/auth', authRoutes);
+app.use('/products', productRoutes);
+
 app.use(
     cors({
         origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN,
         credentials: true,
     })
 );
-
-app.use('/auth', authRoutes);
 
 app.get('/health', (_req, res) => {
     res.json({ ok: true, env: env.NODE_ENV });
