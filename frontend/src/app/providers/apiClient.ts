@@ -1,4 +1,3 @@
-// frontend/src/app/providers/apiClient.ts
 const BASE_URL: string | undefined = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/+$/, '');
 
 function joinUrl(base: string, path: string) {
