@@ -42,8 +42,10 @@ export default function Layout() {
         <>
             <header className="topbar">
                 <div className="container topbar__inner">
-                    <Link to="/" className="brand">Emerald</Link>
-                    <nav className="nav">
+                    <Link to="/" className="brand">
+                        <img src="/favicon.png" alt="" className="brand__logo" />
+                        <span>Emerald Product Campaigns</span>
+                    </Link>                    <nav className="nav">
                         <NavLink to="/campaigns">Campaigns</NavLink>
                         <NavLink to="/products">Products</NavLink>
                     </nav>
