@@ -16,18 +16,26 @@ app.use(express.json());
 
 app.use(cookieParser(env.COOKIE_SECRET));
 
+const corsOptions: cors.CorsOptions = {
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+app.use(cors(corsOptions));
+app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    next();
+});
+
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/keywords', keywordRoutes);
 app.use('/towns', townRoutes);
 app.use('/campaigns', campaignRoutes);
 
-app.use(
-    cors({
-        origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN,
-        credentials: true,
-    })
-);
+
 
 app.get('/health', (_req, res) => {
     res.json({ ok: true, env: env.NODE_ENV });

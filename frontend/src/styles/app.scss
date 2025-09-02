@@ -1,0 +1,14 @@
+@use './reset';
+@use './variables' as *;
+@use './mixins' as *;
+@use './utilities';
+
+:root {
+    color-scheme: dark;
+}
+
+body {
+    background: $bg;
+    color: $fg;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}

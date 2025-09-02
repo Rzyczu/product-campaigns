@@ -40,9 +40,15 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
-router.post('/logout', (_req, res) => {
-    res.clearCookie('sid');
+router.post('/logout', (req, res) => {
+    res.clearCookie('sid', {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        signed: true,
+    });
     res.status(204).end();
 });
+
 
 export default router;

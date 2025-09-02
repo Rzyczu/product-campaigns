@@ -1,0 +1,117 @@
+@use './variables' as *;
+@use './mixins' as mixins;
+
+.container {
+    @include mixins.container;
+}
+
+.brand {
+    font-weight: 700;
+    text-decoration: none;
+    color: $fg;
+}
+
+.btn {
+    border: 1px solid $border;
+    border-radius: $radius;
+    padding: 8px 12px;
+    background: transparent;
+    color: $fg;
+    cursor: pointer;
+}
+
+.btn--primary {
+    background: $primary;
+    border-color: $primary;
+    color: white;
+}
+
+.btn--ghost {
+    background: transparent;
+}
+
+.card {
+    background: $card;
+    border: 1px solid $border;
+    border-radius: $radius;
+    padding: 16px;
+}
+
+.card--centered {
+    max-width: 420px;
+    margin: 64px auto;
+}
+
+.form__row {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+input {
+    border: 1px solid $border;
+    background: #0e1014;
+    color: $fg;
+    border-radius: $radius;
+    padding: 10px;
+}
+
+.alert {
+    background: #3b1d1f;
+    border: 1px solid #6b2b31;
+    color: #ffb3be;
+    padding: 10px;
+    border-radius: $radius;
+    margin-bottom: 12px;
+}
+
+.page {
+    padding-block: 24px;
+}
+
+.pagehead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.muted {
+    color: $muted;
+    font-size: 0.9rem;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: $card;
+    border-bottom: 1px solid $border;
+}
+
+.topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+}
+
+.nav a {
+    color: $fg;
+    text-decoration: none;
+    margin-right: 12px;
+}
+
+.nav a.active {
+    color: $primary;
+}
+
+.userbox {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
