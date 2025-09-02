@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Product } from '../types';
 import { useDeleteProduct } from '../hooks';
 import ProductForm from './ProductForm';
+import { Pencil, Trash2 } from 'lucide-react';
 
 type RowProps = { product: Product };
 
@@ -22,20 +23,30 @@ function Row({ product }: RowProps) {
                 {new Date(product.created_at).toLocaleString()}
             </td>
             <td data-label="Actions" className="ta-right">
-                {!edit && (
-                    <button className="btn" onClick={() => setEdit(true)} disabled={del.isPending}>
-                        Rename
+                <div className="actions-inline">
+                    {!edit && (
+                        <button
+                            className="btn btn--icon"
+                            onClick={() => setEdit(true)}
+                            disabled={del.isPending}
+                            aria-label="Rename product"
+                        >
+                            <Pencil size={16} aria-hidden="true" />
+                            <span className="btn__label">Rename</span>
+                        </button>
+                    )}
+                    <button
+                        className="btn btn--icon btn--ghost"
+                        onClick={() => {
+                            if (confirm('Delete this product?')) del.mutate(product.id);
+                        }}
+                        disabled={del.isPending}
+                        aria-label="Delete product"
+                    >
+                        <Trash2 size={16} aria-hidden="true" />
+                        <span className="btn__label">Delete</span>
                     </button>
-                )}{' '}
-                <button
-                    className="btn btn--ghost"
-                    onClick={() => {
-                        if (confirm('Delete this product?')) del.mutate(product.id);
-                    }}
-                    disabled={del.isPending}
-                >
-                    Delete
-                </button>
+                </div>
             </td>
         </tr>
     );

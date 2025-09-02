@@ -6,7 +6,7 @@
 }
 
 .brand {
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
     color: $fg;
 }
@@ -48,7 +48,8 @@
     margin-bottom: 12px;
 }
 
-input {
+input,
+select {
     border: 1px solid $border;
     background: #0e1014;
     color: $fg;
@@ -116,14 +117,6 @@ input {
     align-items: center;
 }
 
-select {
-    border: 1px solid $border;
-    background: #0e1014;
-    color: $fg;
-    border-radius: $radius;
-    padding: 10px;
-}
-
 .badge {
     display: inline-flex;
     align-items: center;
@@ -169,8 +162,14 @@ select {
     text-align: left;
 }
 
+.actions-inline {
+    display: inline-flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
 .table--responsive {
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
 
         .table,
         .table thead,
@@ -193,7 +192,6 @@ select {
             padding: 8px;
             background: $card;
         }
-
 
         .table td {
             width: 100%;
@@ -230,8 +228,27 @@ select {
             align-items: start;
         }
 
-        .table td[data-label="Actions"] .btn {
-            margin-right: 8px;
+        .table td[data-label="Actions"] .actions-inline {
+            display: inline-flex;
+            gap: 8px;
         }
+    }
+}
+
+.btn--icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+}
+
+.btn--icon svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media (max-width: 800px) {
+    .btn__label {
+        display: none;
     }
 }
