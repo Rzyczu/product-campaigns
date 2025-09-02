@@ -4,6 +4,7 @@ import { useDeleteProduct } from '../hooks';
 import ProductForm from './ProductForm';
 
 type RowProps = { product: Product };
+
 function Row({ product }: RowProps) {
     const del = useDeleteProduct();
     const [edit, setEdit] = useState(false);
@@ -17,8 +18,10 @@ function Row({ product }: RowProps) {
                     product.name
                 )}
             </td>
-            <td data-label="Created">{new Date(product.created_at).toLocaleString()}</td>
-            <td data-label="Actions" style={{ textAlign: 'right' }}>
+            <td data-label="Created" className="nowrap">
+                {new Date(product.created_at).toLocaleString()}
+            </td>
+            <td data-label="Actions" className="ta-right">
                 {!edit && (
                     <button className="btn" onClick={() => setEdit(true)} disabled={del.isPending}>
                         Rename
@@ -40,6 +43,7 @@ function Row({ product }: RowProps) {
 
 export default function ProductsTable({ items }: { items: Product[] }) {
     if (!items.length) return <div className="card">No products yet.</div>;
+
     return (
         <div className="card table--responsive">
             <table className="table">
@@ -47,7 +51,7 @@ export default function ProductsTable({ items }: { items: Product[] }) {
                     <tr>
                         <th>Name</th>
                         <th>Created</th>
-                        <th style={{ textAlign: 'right' }}>Actions</th>
+                        <th className="ta-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>

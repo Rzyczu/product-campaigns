@@ -140,6 +140,20 @@ select {
     border: none;
 }
 
+.ta-right {
+    text-align: right;
+}
+
+.ta-center {
+    text-align: center;
+}
+
+.nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -172,6 +186,7 @@ select {
         }
 
         .table tr {
+            width: 100%;
             border: 1px solid $border;
             border-radius: $radius;
             margin-bottom: 8px;
@@ -179,12 +194,15 @@ select {
             background: $card;
         }
 
+
         .table td {
+            width: 100%;
             border: none;
             display: grid;
-            grid-template-columns: 120px 1fr;
+            grid-template-columns: 120px minmax(0, 1fr);
             gap: 8px;
             padding: 6px 0;
+            text-align: left !important;
         }
 
         .table td::before {
@@ -195,6 +213,25 @@ select {
 
         .table td:last-child {
             padding-bottom: 0;
+        }
+
+        .ta-right,
+        .ta-center {
+            text-align: left !important;
+        }
+
+        .nowrap {
+            white-space: normal;
+            text-overflow: clip;
+            overflow: visible;
+        }
+
+        .table td[data-label="Actions"] {
+            align-items: start;
+        }
+
+        .table td[data-label="Actions"] .btn {
+            margin-right: 8px;
         }
     }
 }

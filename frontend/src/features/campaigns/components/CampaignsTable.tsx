@@ -19,7 +19,7 @@ export default function CampaignsTable({ items }: { items: Campaign[] }) {
                         <th>Town</th>
                         <th>Status</th>
                         <th>Keywords</th>
-                        <th style={{ textAlign: 'right' }}>Actions</th>
+                        <th className="ta-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,18 +27,19 @@ export default function CampaignsTable({ items }: { items: Campaign[] }) {
                         <tr key={c.id}>
                             <td data-label="Name">{c.name}</td>
                             <td data-label="Product">{c.product_name}</td>
-                            <td data-label="Bid" style={{ textAlign: 'center' }}>{formatMoney(c.bid_amount_cents)}</td>
-                            <td data-label="Fund" style={{ textAlign: 'center' }}>{formatMoney(c.fund_cents)}</td>
-                            <td data-label="Town" style={{ textAlign: 'center' }}>{c.town_name}</td>
-                            <td data-label="Status" style={{ textAlign: 'center' }}>{c.status}</td>
-                            <td data-label="Keywords" style={{ maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {c.keywords.join(', ')}
-                            </td>
-                            <td data-label="Actions" style={{ textAlign: 'right' }}>
+                            <td data-label="Bid" className="ta-center">{formatMoney(c.bid_amount_cents)}</td>
+                            <td data-label="Fund" className="ta-center">{formatMoney(c.fund_cents)}</td>
+                            <td data-label="Town" className="ta-center">{c.town_name}</td>
+                            <td data-label="Status" className="ta-center">{c.status}</td>
+                            <td data-label="Keywords" className="nowrap">{c.keywords.join(', ')}</td>
+                            <td data-label="Actions" className="ta-right">
                                 <Link className="btn" to={`/campaigns/${c.id}/edit`}>Edit</Link>{' '}
-                                <button className="btn btn--ghost" onClick={() => {
-                                    if (confirm('Delete campaign?')) del.mutate(c.id);
-                                }}>Delete</button>
+                                <button
+                                    className="btn btn--ghost"
+                                    onClick={() => { if (confirm('Delete campaign?')) del.mutate(c.id); }}
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     ))}
