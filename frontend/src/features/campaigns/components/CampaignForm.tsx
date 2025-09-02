@@ -67,6 +67,7 @@ export default function CampaignForm({ mode, defaultValues, onSubmit, submitting
     const [townQuery, setTownQuery] = useState('');
     const debTown = useDebouncedValue(townQuery, 250);
     const { data: towns } = useTownsDropdown(debTown, 'PL');
+    const { data: allTowns } = useTownsDropdown('', 'PL');
 
 
     useEffect(() => {
@@ -78,13 +79,24 @@ export default function CampaignForm({ mode, defaultValues, onSubmit, submitting
     }, [towns]);
 
     const onSubmitForm = async (v: CampaignFormValues) => {
+        const currentId = Number(v.town_id);
+        const pool = (towns ?? allTowns ?? []);
+        let safeTownId = currentId;
+        if (!pool.some(t => t.id === currentId)) {
+            const fallback = pool[0];
+            if (fallback) {
+                safeTownId = fallback.id;
+                setValue('town_id', safeTownId as any, { shouldValidate: true });
+            }
+        }
+
         const dto = {
             product_id: v.product_id,
             name: v.name.trim(),
             bid_amount_cents: parseMoneyToCents(v.bid_amount),
             fund_cents: parseMoneyToCents(v.fund),
             status: v.status,
-            town_id: Number(v.town_id),
+            town_id: safeTownId,
             radius_km: toNumber1Dec(v.radius_km),
             keywords: (v.keywords || []).map(s => s.trim()).filter(Boolean),
         };
