@@ -12,9 +12,13 @@ export function useCampaign(id: string) {
 }
 export function useCreateCampaign() {
     const qc = useQueryClient();
+
     return useMutation({
         mutationFn: (dto: CampaignCreateDTO) => createCampaign(dto),
-        onSuccess: () => qc.invalidateQueries({ queryKey: key }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: key });
+            qc.invalidateQueries({ queryKey: ['me'] });
+        },
     });
 }
 export function useUpdateCampaign(id: string) {
@@ -24,6 +28,7 @@ export function useUpdateCampaign(id: string) {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: key });
             qc.invalidateQueries({ queryKey: [...key, id] });
+            qc.invalidateQueries({ queryKey: ['me'] });
         },
     });
 }
@@ -31,6 +36,9 @@ export function useDeleteCampaign() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => deleteCampaign(id),
-        onSuccess: () => qc.invalidateQueries({ queryKey: key }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: key });
+            qc.invalidateQueries({ queryKey: ['me'] });
+        },
     });
 }

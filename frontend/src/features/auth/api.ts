@@ -1,6 +1,10 @@
 import { apiFetch } from '@/app/providers/apiClient';
 import type { User } from './store';
 
+export async function me(): Promise<User> {
+    return apiFetch<User>('/auth/me');
+}
+
 export async function login(email: string, password: string): Promise<User> {
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');

@@ -1,8 +1,11 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/store';
 import { logout } from '@/features/auth/api';
+import { useMe } from '@/features/auth/hooks';
+import { formatMoney } from '@/lib/format';
 
 export default function Layout() {
+    useMe();
     const user = useAuth((s) => s.user);
     const clear = useAuth((s) => s.clear);
     const navigate = useNavigate();
@@ -23,8 +26,9 @@ export default function Layout() {
                     <div className="userbox">
                         {user ? (
                             <>
-                                <span className="userbox__name">{user.name ?? user.email}</span>
-                                <button className="btn btn--ghost" onClick={onLogout}>Logout</button>
+                                <span className="userbox__name">
+                                    {user.name ?? user.email} · {formatMoney(user.balance_cents)}
+                                </span>                                <button className="btn btn--ghost" onClick={onLogout}>Logout</button>
                             </>
                         ) : (
                             <NavLink to="/login" className="btn btn--primary">Login</NavLink>

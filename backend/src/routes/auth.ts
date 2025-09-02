@@ -3,6 +3,23 @@ import { pool } from '../config/db.js';
 
 const router = Router();
 
+router.get('/me', async (req, res, next) => {
+    try {
+        const uid = req.signedCookies?.sid as string | undefined;
+        if (!uid) return res.status(401).json({ error: 'Unauthorized' });
+
+        const { rows } = await pool.query(
+            `select id, email, name, balance_cents from app.users where id = $1`,
+            [uid]
+        );
+        const user = rows[0];
+        if (!user) return res.status(401).json({ error: 'Unauthorized' });
+        res.json(user);
+    } catch (err) {
+        next(err);
+    }
+});
+
 router.post('/login', async (req, res, next) => {
     try {
         const { email, password } = (req.body ?? {}) as { email?: string; password?: string };
