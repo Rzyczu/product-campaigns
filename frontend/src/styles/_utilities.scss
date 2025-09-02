@@ -257,13 +257,98 @@ select {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-weight: 700;
-    text-decoration: none;
-    color: $fg;
 }
 
 .brand__logo {
     display: block;
     height: 30px;
     width: auto;
+}
+
+.menu-toggle {
+    display: none;
+    border: 1px solid $border;
+    background: transparent;
+    color: $fg;
+    border-radius: $radius;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.deposit-popover {
+    position: absolute;
+    right: 12px;
+    top: 56px;
+    display: grid;
+    gap: 8px;
+    z-index: 50;
+}
+
+.mobile-nav {
+    display: none;
+}
+
+.mobile-backdrop {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .nav {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 39;
+        display: block;
+    }
+
+
+    .mobile-nav {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        background: $card;
+        border-bottom: 1px solid $border;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        z-index: 40;
+        display: none;
+
+        &.is-open {
+            display: block;
+        }
+    }
+
+    .mobile-nav__inner {
+        display: grid;
+        gap: 6px;
+        padding: 12px 0;
+    }
+
+    .mobile-nav__inner a {
+        display: block;
+        padding: 10px 12px;
+        border-radius: $radius;
+        color: $fg;
+        text-decoration: none;
+    }
+
+    .mobile-nav__inner a.active {
+        background: rgba($primary, 0.15);
+        color: $primary;
+    }
+
+    .deposit-popover {
+        right: 8px;
+        top: 56px;
+    }
 }
