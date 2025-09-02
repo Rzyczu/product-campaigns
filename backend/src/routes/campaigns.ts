@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { pool } from '../config/db.js';
 import { requireAuth } from '../middlewares/auth.js';
 import type { CampaignCreate, CampaignUpdate } from '../types.js';
+import { ensureFundsOrThrow } from '../lib/funds.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -37,6 +38,15 @@ router.post('/', async (req, res, next) => {
         if (!body?.product_id || !body?.name) {
             return res.status(400).json({ error: 'product_id and name are required' });
         }
+        if (!Number.isInteger(body.bid_amount_cents) || body.bid_amount_cents < 0) {
+            return res.status(400).json({ error: 'bid_amount_cents must be a non-negative integer' });
+        }
+        if (!Number.isInteger(body.fund_cents) || body.fund_cents < 0) {
+            return res.status(400).json({ error: 'fund_cents must be a non-negative integer' });
+        }
+        if (!Number.isFinite(body.radius_km) || Number(body.radius_km) <= 0) {
+            return res.status(400).json({ error: 'radius_km must be > 0' });
+        }
 
         await client.query('begin');
 
@@ -45,19 +55,25 @@ router.post('/', async (req, res, next) => {
             [body.product_id, req.userId]
         );
         if (!prod.rowCount) {
-            throw Object.assign(new Error('Product not found'), { statusCode: 404 });
+            await client.query('rollback');
+            return res.status(404).json({ error: 'Product not found' });
         }
+
+        await ensureFundsOrThrow(client, req.userId!, Number(body.fund_cents));
 
         const terms = Array.from(new Set((body.keywords || []).map(s => s.trim()).filter(Boolean)));
         if (terms.length) {
             const values = terms.map((_, i) => `($${i + 1})`).join(',');
-            await client.query(`insert into app.keywords(term) values ${values} on conflict (term) do nothing`, terms);
+            await client.query(
+                `insert into app.keywords(term) values ${values} on conflict (term) do nothing`,
+                terms
+            );
         }
         const kw = terms.length
-            ? await client.query(`select id from app.keywords where term = any($1::text[])`, [terms])
+            ? await client.query<{ id: number }>(`select id from app.keywords where term = any($1::text[])`, [terms])
             : { rows: [] as { id: number }[] };
 
-        const camp = await client.query(
+        const camp = await client.query<{ id: string }>(
             `insert into app.campaigns
        (seller_id, product_id, name, bid_amount_cents, fund_cents, status, town_id, radius_km)
        values ($1,$2,$3,$4,$5,$6,$7,$8)
@@ -107,11 +123,38 @@ router.put('/:id', async (req, res, next) => {
 
         await client.query('begin');
 
-        const own = await client.query(
-            `select 1 from app.campaigns where id = $1 and seller_id = $2`,
-            [id, req.userId]
+        const cur = await client.query<{ seller_id: string; fund_cents: number }>(
+            `select seller_id, fund_cents from app.campaigns where id = $1 for update`,
+            [id]
         );
-        if (!own.rowCount) throw Object.assign(new Error('Not found'), { statusCode: 404 });
+        const row = cur.rows[0];
+        if (!row) {
+            await client.query('rollback');
+            return res.status(404).json({ error: 'Not found' });
+        }
+        if (row.seller_id !== req.userId) {
+            await client.query('rollback');
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        if (typeof body.fund_cents === 'number') {
+            if (!Number.isInteger(body.fund_cents) || body.fund_cents < 0) {
+                await client.query('rollback');
+                return res.status(400).json({ error: 'fund_cents must be a non-negative integer' });
+            }
+            const diff = Number(body.fund_cents) - Number(row.fund_cents);
+            if (diff > 0) {
+                await ensureFundsOrThrow(client, req.userId!, diff);
+            }
+        }
+        if (typeof body.bid_amount_cents === 'number' && (!Number.isInteger(body.bid_amount_cents) || body.bid_amount_cents < 0)) {
+            await client.query('rollback');
+            return res.status(400).json({ error: 'bid_amount_cents must be a non-negative integer' });
+        }
+        if (typeof body.radius_km === 'number' && !(body.radius_km > 0)) {
+            await client.query('rollback');
+            return res.status(400).json({ error: 'radius_km must be > 0' });
+        }
 
         const updates: string[] = [];
         const args: any[] = [];
@@ -133,16 +176,21 @@ router.put('/:id', async (req, res, next) => {
             );
         }
 
-        // keywords
         if (Array.isArray(body.keywords)) {
             const terms = Array.from(new Set(body.keywords.map(s => s.trim()).filter(Boolean)));
             if (terms.length) {
                 const values = terms.map((_, i) => `($${i + 1})`).join(',');
-                await client.query(`insert into app.keywords(term) values ${values} on conflict (term) do nothing`, terms);
+                await client.query(
+                    `insert into app.keywords(term) values ${values} on conflict (term) do nothing`,
+                    terms
+                );
             }
             await client.query(`delete from app.campaign_keywords where campaign_id = $1`, [id]);
             if (terms.length) {
-                const kw = await client.query(`select id from app.keywords where term = any($1::text[])`, [terms]);
+                const kw = await client.query<{ id: number }>(
+                    `select id from app.keywords where term = any($1::text[])`,
+                    [terms]
+                );
                 const pairs = kw.rows.map((_, i) => `($1, $${i + 2})`).join(',');
                 await client.query(
                     `insert into app.campaign_keywords(campaign_id, keyword_id) values ${pairs} on conflict do nothing`,

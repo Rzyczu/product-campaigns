@@ -1,40 +1,42 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CampaignForm from '@/features/campaigns/components/CampaignForm';
-import { useCampaign, useUpdateCampaign } from '@/features/campaigns/hooks';
+import { useCreateCampaign } from '@/features/campaigns/hooks';
+import { useToast } from '@/components/Toast/ToastProvider';
+import { parseInsufficientFunds } from '@/lib/errors';
+import { deposit } from '@/features/auth/api';
+import { useAuth } from '@/features/auth/store';
+import { ApiError } from '@/app/providers/apiClient';
 
-export default function CampaignEditPage() {
-    const { id = '' } = useParams<{ id: string }>();
+export default function CampaignCreatePage() {
     const nav = useNavigate();
-    const { data, isLoading, isError, error } = useCampaign(id);
-    const update = useUpdateCampaign(id);
-
-    if (isLoading) return <div className="card">Loading…</div>;
-    if (isError || !data) return <div className="alert">{(error as any)?.message ?? 'Not found'}</div>;
+    const create = useCreateCampaign();
+    const toast = useToast();
+    const setUser = useAuth(s => s.setUser);
 
     return (
         <section>
-            <div className="pagehead"><h1>Edit campaign</h1></div>
+            <div className="pagehead"><h1>New campaign</h1></div>
             <CampaignForm
-                mode="edit"
-                defaultValues={{
-                    product_id: data.product_id,
-                    name: data.name,
-                    bid_amount_cents: data.bid_amount_cents,
-                    fund_cents: data.fund_cents,
-                    status: data.status,
-                    town_id: data.town_id,
-                    radius_km: data.radius_km.toString(),
-                    keywords: data.keywords,
-                }}
+                mode="create"
                 onSubmit={async (dto) => {
                     try {
-                        await update.mutateAsync(dto);
+                        await create.mutateAsync(dto);
+                        toast.success('Campaign created');
                         nav('/campaigns', { replace: true });
-                    } catch { /* handled */ }
+                    } catch (e: any) {
+                        const err = e as ApiError;
+                        if (err.code === 'INSUFFICIENT_FUNDS' && err.missing_cents && err.missing_cents > 0) {
+                            const pln = (err.missing_cents / 100).toFixed(2).replace('.', ',');
+                            toast.error(`Niewystarczające środki: ${pln} PLN. Kliknij saldo, aby szybko wpłacić.`);
+                            create.reset();
+                        }
+                        toast.error(err.message || 'Nie udało się utworzyć kampanii');
+                        throw err;
+                    }
                 }}
-                submitting={update.isPending}
+                submitting={create.isPending}
             />
-            {update.isError && <div className="alert">{(update.error as any)?.message ?? 'Error'}</div>}
+            {create.isError && <div className="alert"> {(create.error as any)?.message ?? 'Error'} </div>}
         </section>
     );
 }
