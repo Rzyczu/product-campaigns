@@ -9,6 +9,7 @@ import productRoutes from './routes/products.js';
 import keywordRoutes from './routes/keywords.js';
 import townRoutes from './routes/towns.js';
 import campaignRoutes from './routes/campaigns.js';
+import walletRoutes from './routes/wallet.js';
 
 const app = express();
 
@@ -34,8 +35,7 @@ app.use('/products', productRoutes);
 app.use('/keywords', keywordRoutes);
 app.use('/towns', townRoutes);
 app.use('/campaigns', campaignRoutes);
-
-
+app.use('/wallet', walletRoutes);
 
 app.get('/health', (_req, res) => {
     res.json({ ok: true, env: env.NODE_ENV });

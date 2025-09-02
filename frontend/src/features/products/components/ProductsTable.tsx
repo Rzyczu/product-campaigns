@@ -10,15 +10,15 @@ function Row({ product }: RowProps) {
 
     return (
         <tr>
-            <td style={{ width: '60%' }}>
+            <td data-label="Name">
                 {edit ? (
                     <ProductForm id={product.id} initialName={product.name} onDone={() => setEdit(false)} />
                 ) : (
                     product.name
                 )}
             </td>
-            <td>{new Date(product.created_at).toLocaleString()}</td>
-            <td style={{ textAlign: 'right' }}>
+            <td data-label="Created">{new Date(product.created_at).toLocaleString()}</td>
+            <td data-label="Actions" style={{ textAlign: 'right' }}>
                 {!edit && (
                     <button className="btn" onClick={() => setEdit(true)} disabled={del.isPending}>
                         Rename
@@ -40,14 +40,13 @@ function Row({ product }: RowProps) {
 
 export default function ProductsTable({ items }: { items: Product[] }) {
     if (!items.length) return <div className="card">No products yet.</div>;
-
     return (
-        <div className="card">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="card table--responsive">
+            <table className="table">
                 <thead>
                     <tr>
-                        <th style={{ textAlign: 'left' }}>Name</th>
-                        <th style={{ textAlign: 'left' }}>Created</th>
+                        <th>Name</th>
+                        <th>Created</th>
                         <th style={{ textAlign: 'right' }}>Actions</th>
                     </tr>
                 </thead>

@@ -5,15 +5,14 @@ import { useDeleteCampaign } from '../hooks';
 
 export default function CampaignsTable({ items }: { items: Campaign[] }) {
     const del = useDeleteCampaign();
-
     if (!items.length) return <div className="card">No campaigns yet.</div>;
 
     return (
-        <div className="card">
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="card table--responsive">
+            <table className="table">
                 <thead>
                     <tr>
-                        <th style={{ textAlign: 'left' }}>Name</th>
+                        <th>Name</th>
                         <th>Product</th>
                         <th>Bid</th>
                         <th>Fund</th>
@@ -26,16 +25,16 @@ export default function CampaignsTable({ items }: { items: Campaign[] }) {
                 <tbody>
                     {items.map(c => (
                         <tr key={c.id}>
-                            <td>{c.name}</td>
-                            <td>{c.product_name}</td>
-                            <td style={{ textAlign: 'center' }}>{formatMoney(c.bid_amount_cents)}</td>
-                            <td style={{ textAlign: 'center' }}>{formatMoney(c.fund_cents)}</td>
-                            <td style={{ textAlign: 'center' }}>{c.town_name}</td>
-                            <td style={{ textAlign: 'center' }}>{c.status}</td>
-                            <td style={{ maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <td data-label="Name">{c.name}</td>
+                            <td data-label="Product">{c.product_name}</td>
+                            <td data-label="Bid" style={{ textAlign: 'center' }}>{formatMoney(c.bid_amount_cents)}</td>
+                            <td data-label="Fund" style={{ textAlign: 'center' }}>{formatMoney(c.fund_cents)}</td>
+                            <td data-label="Town" style={{ textAlign: 'center' }}>{c.town_name}</td>
+                            <td data-label="Status" style={{ textAlign: 'center' }}>{c.status}</td>
+                            <td data-label="Keywords" style={{ maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {c.keywords.join(', ')}
                             </td>
-                            <td style={{ textAlign: 'right' }}>
+                            <td data-label="Actions" style={{ textAlign: 'right' }}>
                                 <Link className="btn" to={`/campaigns/${c.id}/edit`}>Edit</Link>{' '}
                                 <button className="btn btn--ghost" onClick={() => {
                                     if (confirm('Delete campaign?')) del.mutate(c.id);

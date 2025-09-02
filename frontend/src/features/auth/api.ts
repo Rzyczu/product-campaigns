@@ -20,3 +20,10 @@ export async function login(email: string, password: string): Promise<User> {
 export async function logout(): Promise<void> {
     await apiFetch('/auth/logout', { method: 'POST', parse: 'text' });
 }
+
+export async function deposit(amount_cents: number): Promise<User> {
+    return apiFetch<User>('/wallet/deposit', {
+        method: 'POST',
+        body: JSON.stringify({ amount_cents }),
+    });
+}

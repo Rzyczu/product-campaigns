@@ -139,3 +139,62 @@ select {
     padding: 0 6px;
     border: none;
 }
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 8px;
+    border-bottom: 1px solid $border;
+}
+
+.table th {
+    text-align: left;
+}
+
+.table--responsive {
+    @media (max-width: 700px) {
+
+        .table,
+        .table thead,
+        .table tbody,
+        .table th,
+        .table td,
+        .table tr {
+            display: block;
+        }
+
+        .table thead {
+            display: none;
+        }
+
+        .table tr {
+            border: 1px solid $border;
+            border-radius: $radius;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: $card;
+        }
+
+        .table td {
+            border: none;
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .table td::before {
+            content: attr(data-label);
+            color: $muted;
+            font-weight: 600;
+        }
+
+        .table td:last-child {
+            padding-bottom: 0;
+        }
+    }
+}
